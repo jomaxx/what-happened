@@ -1,4 +1,4 @@
-import { createDispatcher, INIT } from '../src';
+import { createDispatcher } from '../';
 
 it('should subscribe', () => {
   const { dispatch, subscribe } = createDispatcher();

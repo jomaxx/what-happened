@@ -25,9 +25,10 @@ it('should get previously dispatched events', () => {
 it('should limit number of cached events', () => {
   const { dispatch, getEvents } = createEventStore(2);
   dispatch({ type: 'ONE' });
-  dispatch({ type: 'TWO' })
-  dispatch({ type: 'THREE' });
-  expect(getEvents()).toEqual([{ type: 'TWO' }, { type: 'THREE' }]);
+  dispatch({ type: 'TWO' });
+  dispatch({ type: 'THREE' }, true);
+  dispatch({ type: 'FOUR' });
+  expect(getEvents()).toEqual([{ type: 'TWO' }, { type: 'FOUR' }]);
 });
 
 it('should throw error if cacheLimit < 0', () => {

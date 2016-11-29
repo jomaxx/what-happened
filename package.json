@@ -1,6 +1,6 @@
 {
   "name": "what-happened",
-  "version": "0.0.1",
+  "version": "1.0.0-alpha",
   "description": "",
   "main": "lib/index.js",
   "scripts": {

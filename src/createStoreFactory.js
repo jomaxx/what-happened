@@ -1,14 +1,8 @@
-import createDispatcher from './createDispatcher';
-
 const INIT = '@@INIT';
 
-const defaultReducer = (state = [], event) => [...state, event];
+const defaultReducer = (state, event) => event;
 
-const createStore = (
-  reducer = defaultReducer,
-  initialState,
-  dispatcher = createDispatcher()
-) => {
+const createStoreFatory = (dispatcher) => (reducer = defaultReducer, initialState) => {
   let state = reducer(initialState, { type: INIT });
   const subscribers = [];
   let destroyed = false;
@@ -27,17 +21,14 @@ const createStore = (
   };
 
   const destroy = () => {
-    if (!destroyed) {
-      unsubscribeFromDispatcher();
-      subscribers.splice(0);
-      destroyed = true;
-    }
-
-    return destroyed;
+    if (destroyed) return;
+    unsubscribeFromDispatcher();
+    subscribers.splice(0);
+    destroyed = true;
   };
 
-  return { getState, subscribe, destroy, dispatch: dispatcher.dispatch };
+  return { getState, subscribe, destroy };
 };
 
-export default createStore;
+export default createStoreFatory;
 export { INIT };

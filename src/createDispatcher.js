@@ -1,3 +1,5 @@
+import createStoreFactory from './createStoreFactory';
+
 const createDispatcher = () => {
   const subscribers = [];
 
@@ -25,7 +27,9 @@ const createDispatcher = () => {
     dispatching = false;
   };
 
-  return { dispatch, subscribe };
+  const createStore = createStoreFactory({ dispatch, subscribe });
+
+  return { dispatch, subscribe, createStore };
 };
 
 export default createDispatcher;

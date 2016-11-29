@@ -44,15 +44,15 @@ document.body.appendChild(button);
 
 ```
 
-## createStore([reducer], [initialState], [dispatcher]) => store
-A `store` manages the state of your application (or component). When an `event` occurs, the `store` updates it's `state` and notifies it's subscribers. The `reducer` is a function that takes the previous `state` and the dispatched `event` and returns the next `state` (default = `(state = [], event) => [...state, event]`). Your store can be created with an `initialState` (default = `undefined`). You can optionally specify a `dispatcher` for the `store` to use. This allows stores to share a `dispatcher`.
+## dispatcher.createStore([reducer], [initialState]) => store
+A `store` manages the state of your application (or component). When an `event` occurs, the `store` updates it's `state` and notifies it's subscribers. The `reducer` is a function that takes the previous `state` and the dispatched `event` and returns the next `state` (default = `(state = [], event) => event`). Your store can be created with an `initialState` (default = `undefined`).
 
 ```js
 import { createDispatcher, createStore } from 'what-happened';
 
 const dispatcher = createDispatcher();
 
-const reducer = (state, event) => {
+const store = dispatcher.createStore((state, event) => {
   if (event.type === 'RESIZE') {
     return {
       width: event.width,
@@ -61,9 +61,7 @@ const reducer = (state, event) => {
   }
 
   return state;
-};
-
-const store = createStore(reducer, { width: 0, height: 0 }, dispatcher);
+});
 
 ```
 
@@ -78,13 +76,8 @@ store.subscribe(() => {
   const { width, height } = store.getState();
   div.innerText = `window size = ${width}x${height}`;
 });
-```
 
-### store.dispatch(event)
-See `dispatcher.dispatch`.
-
-```js
-const handleResize = () => store.dispatch({
+const handleResize = () => dispatcher.dispatch({
   type: 'RESIZE',
   width: window.innerWidth,
   height: window.innerHeight,
@@ -92,7 +85,6 @@ const handleResize = () => store.dispatch({
 
 window.addEventListener('resize', handleResize);
 handleResize(); // trigger initial resize
-
 ```
 
 ### store.destory()

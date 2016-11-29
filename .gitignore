@@ -1,4 +1,4 @@
-node_modules
-index.js
+/node_modules
+/index.js
 .DS_Store
 npm-debug.log

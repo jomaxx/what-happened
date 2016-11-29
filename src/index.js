@@ -1,20 +1,13 @@
-const verifyEvent = (event) => {
-  if (event && event.hasOwnProperty('type')) return;
-  throw new Error('event.type is required');
-};
+const createEventStore = (cacheLimit = 1000) => {
+  if (cacheLimit < 0) throw new Error('cacheLimit must be >= 0');
 
-const INIT = '@@INIT';
-
-const createDispatcher = (createInitEvent = () => ({ type: INIT })) => {
-  if (typeof createInitEvent !== 'function') {
-    throw new Error('createInitEvent should be a function');
-  }
-
+  const events = [];
   const subscribers = [];
   let dispatching = false;
 
+  const getEvents = () => [...events];
+
   const dispatchToSubscribers = (subscribers, event) => {
-    verifyEvent(event);
     if (dispatching) throw new Error('do not dispatch from a subscriber');
     dispatching = true;
     subscribers.forEach(fn => fn(event));
@@ -23,15 +16,17 @@ const createDispatcher = (createInitEvent = () => ({ type: INIT })) => {
 
   const subscribe = (fn) => {
     subscribers.push(fn);
-    dispatchToSubscribers([fn], createInitEvent());
     return () => { subscribers.splice(subscribers.indexOf(fn), 1); };
   };
 
   const dispatch = (event) => {
+    if (!event || !event.hasOwnProperty('type')) throw new Error('event.type is required');
+    events.push(event);
+    events.splice(0, events.length - cacheLimit);
     dispatchToSubscribers(subscribers, event);
   };
 
-  return { dispatch, subscribe };
+  return { getEvents, dispatch, subscribe };
 };
 
-export { createDispatcher, INIT };
+export { createEventStore };

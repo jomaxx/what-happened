@@ -47,6 +47,19 @@ describe('dispatcher', () => {
     catch(e) { return; }
     throw new Error('no error thrown');
   });
+
+  it('should block dispatch', () => {
+    const { dispatch, block } = createDispatcher();
+
+    try {
+      block(() => dispatch({ type: 'DONE' }), 'DONE');
+    } catch(e) {
+      expect(e.message).toEqual('DONE');
+      return;
+    }
+
+    throw new Error('no error thrown');
+  });
 });
 
 describe('store', () => {
@@ -135,5 +148,43 @@ describe('store', () => {
     try { subscribe(() => {}); }
     catch(e) { return; }
     throw new Error('no error thrown');
+  });
+
+  it('should block dispatch from reducer', () => {
+    const { createStore, dispatch } = createDispatcher();
+
+    const { getState } = createStore((state, event) => {
+      if (event.type === INIT) {
+        try { dispatch({ type: 'ERROR' }); }
+        catch (e) { return { init: true }; }
+      }
+
+      if (event.type === 'DONE') {
+        try { dispatch({ type: 'ERROR' }); }
+        catch (e) { return { done: true }; }
+      }
+    });
+
+    expect(getState()).toEqual({ init: true });
+    dispatch({ type: 'DONE' });
+    expect(getState()).toEqual({ done: true });
+  });
+
+  it('should dispatch from store subscriber', () => {
+    const { createStore, dispatch } = createDispatcher();
+
+    const { subscribe, getState } = createStore((state, event) => {
+      if (event.type === 'DONE') return { done: true };
+      return {};
+    });
+
+    subscribe(() => {
+      if (getState().done) return;
+      dispatch({ type: 'DONE' });
+    });
+
+    dispatch({ type: 'TEST' });
+
+    expect(getState()).toEqual({ done: true });
   });
 });

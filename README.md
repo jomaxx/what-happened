@@ -44,24 +44,30 @@ document.body.appendChild(button);
 
 ```
 
+### dispatcher.block(hook, [blockMsg])
+Prevent dispatching of events while executing `hook`. `blockMsg` let's you define the message of the thrown error.
+
+```js
+const button = document.createElement('button');
+button.innerText = 'Yo!';
+
+button.addEventListener('click', () => dispatcher.dispatch({
+  type: 'ALERT',
+  message: 'Yo!',
+}));
+
+document.body.appendChild(button);
+
+```
+
 ## dispatcher.createStore([reducer], [initialState]) => store
 A `store` manages the state of your application (or component). When an `event` occurs, the `store` updates it's `state` and notifies it's subscribers. The `reducer` is a function that takes the previous `state` and the dispatched `event` and returns the next `state` (default = `(state = [], event) => event`). Your store can be created with an `initialState` (default = `undefined`).
 
 ```js
-import { createDispatcher, createStore } from 'what-happened';
-
-const dispatcher = createDispatcher();
-
-const store = dispatcher.createStore((state, event) => {
-  if (event.type === 'RESIZE') {
-    return {
-      width: event.width,
-      height: event.height,
-    };
-  }
-
-  return state;
-});
+// this will throw an error
+dipatcher.block(() => {
+  dispatcher.dispatch({ type: 'ERROR' });
+}, 'dispatching is blocked!');
 
 ```
 

@@ -53,7 +53,7 @@ describe('dispatcher', () => {
 
     try {
       block(() => {
-        block(() => {});
+        block(() => {}, 'ERROR');
         dispatch({ type: 'DONE' });
       }, 'DONE');
     } catch(e) {
@@ -70,9 +70,12 @@ describe('dispatcher', () => {
 
     try {
       block(() => {
-        block(() => {}, 'DONE');
+        block(() => {
+          dispatch({ type: 'DONE' });
+        }, 'DONE');
+
         dispatch({ type: 'ERROR' });
-      }, 'DONE');
+      }, 'ERROR');
     } catch(e) {
       expect(e.message).toEqual('DONE');
       dispatch({ type: 'DONE' });

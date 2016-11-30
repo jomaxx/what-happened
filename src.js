@@ -41,13 +41,12 @@ const createDispatcher = () => {
   const subscribers = [];
   const eventQueue = [];
   let dispatching = false;
-  let blockMsg = false;
+  let blockMsgs = [];
 
   const block = (fn, msg) => {
-    if (blockMsg) throw new Error('do not nest dispatcher.block');
-    blockMsg = msg || 'dispatcher is blocked';
-    fn();
-    blockMsg = false;
+    blockMsgs.push(msg || 'dispatcher is blocked');
+    try { fn(); }
+    finally { blockMsgs.pop(); }
   };
 
   const subscribe = (fn) => {
@@ -63,7 +62,7 @@ const createDispatcher = () => {
   };
 
   const dispatch = (event) => {
-    if (blockMsg) throw new Error(blockMsg);
+    if (blockMsgs.length) throw new Error(blockMsgs[blockMsgs.length - 1]);
     if (!event || !event.hasOwnProperty('type')) throw new Error('event.type is required');
     eventQueue.push(event);
     if (dispatching) return;

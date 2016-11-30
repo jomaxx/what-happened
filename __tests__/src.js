@@ -52,19 +52,33 @@ describe('dispatcher', () => {
     const { dispatch, block } = createDispatcher();
 
     try {
-      block(() => dispatch({ type: 'DONE' }), 'DONE');
+      block(() => {
+        block(() => {});
+        dispatch({ type: 'DONE' });
+      }, 'DONE');
     } catch(e) {
       expect(e.message).toEqual('DONE');
+      dispatch({ type: 'DONE' });
       return;
     }
 
     throw new Error('no error thrown');
   });
 
-  it('should throw error in nested block', () => {
+  it('should throw error from nested block', () => {
     const { dispatch, block } = createDispatcher();
-    try { block(() => block()); }
-    catch(e) { return; }
+
+    try {
+      block(() => {
+        block(() => {}, 'DONE');
+        dispatch({ type: 'ERROR' });
+      }, 'DONE');
+    } catch(e) {
+      expect(e.message).toEqual('DONE');
+      dispatch({ type: 'DONE' });
+      return;
+    }
+
     throw new Error('no error thrown');
   });
 });

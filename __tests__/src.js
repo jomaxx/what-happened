@@ -60,6 +60,13 @@ describe('dispatcher', () => {
 
     throw new Error('no error thrown');
   });
+
+  it('should throw error in nested block', () => {
+    const { dispatch, block } = createDispatcher();
+    try { block(() => block()); }
+    catch(e) { return; }
+    throw new Error('no error thrown');
+  });
 });
 
 describe('store', () => {

@@ -44,6 +44,7 @@ const createDispatcher = () => {
   let blockMsg = false;
 
   const block = (fn, msg) => {
+    if (blockMsg) throw new Error('do not nest dispatcher.block');
     blockMsg = msg || 'dispatcher is blocked';
     fn();
     blockMsg = false;

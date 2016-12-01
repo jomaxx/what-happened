@@ -59,16 +59,25 @@ dipatcher.block(() => {
 A `store` manages the state of your application (or component). When an `event` occurs, the `store` updates it's `state` and notifies it's subscribers. The `reducer` is a function that takes the previous `state` and the dispatched `event` and returns the next `state` (default = `(state = [], event) => event`). Your store can be created with an `initialState` (default = `undefined`).
 
 ```js
-import { createDispatcher, createStore } from 'what-happened';
+import { createDispatcher, INIT } from 'what-happened';
 
 const dispatcher = createDispatcher();
 
 const store = dispatcher.createStore((state, event) => {
-  if (event.type === 'RESIZE') {
-    return {
-      width: event.width,
-      height: event.height,
-    };
+  switch (event.type) {
+    case INIT: {
+      return {
+        width: 0,
+        height: 0,
+      };
+    }
+
+    case 'RESIZE': {
+      return {
+        width: event.width,
+        height: event.height,
+      };
+    }
   }
 
   return state;
